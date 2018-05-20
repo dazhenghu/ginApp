@@ -2,8 +2,16 @@ package ginApp
 
 import "github.com/gin-gonic/gin"
 
-func Run() *gin.Engine {
+type GinApp struct {
+    *gin.Engine
+}
+
+func Run() *GinApp {
     app := gin.Default()
-    app.Run()
-    return app
+    ginApp := &GinApp{
+        app,
+    }
+
+    ginApp.Run()
+    return ginApp
 }
