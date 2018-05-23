@@ -41,7 +41,7 @@ func Instance() *GinApp {
     return instance
 }
 
-func Run(addr ...string) *GinApp {
+func (app *GinApp)Run(addr ...string) *GinApp {
     Instance().engine.Run(addr...)
     return Instance()
 }
