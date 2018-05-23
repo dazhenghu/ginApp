@@ -1,17 +1,42 @@
 package ginApp
 
-import "github.com/gin-gonic/gin"
+import (
+    "github.com/gin-gonic/gin"
+    "sync"
+)
 
 type GinApp struct {
-    *gin.Engine
+    engine *gin.Engine
+    appConfig map[string]interface{} // app的配置信息
 }
 
-func Run() *GinApp {
-    app := gin.Default()
-    ginApp := &GinApp{
-        app,
+var instance *GinApp
+var mutex sync.Mutex
+
+/**
+app单例
+ */
+func Instance() *GinApp {
+    if instance == nil {
+        mutex.Lock()
+        defer mutex.Unlock()
+        if instance == nil {
+            app := gin.Default()
+            instance = &GinApp{
+                engine:app,
+                appConfig:make(map[string]interface{}),
+            }
+        }
     }
 
-    ginApp.Run()
-    return ginApp
+    return instance
+}
+
+func Run(addr ...string) *GinApp {
+    Instance().engine.Run(addr...)
+    return Instance()
+}
+
+func (app *GinApp)Engine() *gin.Engine  {
+    return app.engine
 }

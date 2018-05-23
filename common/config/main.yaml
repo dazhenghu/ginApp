@@ -1,0 +1,5 @@
+addr:8080
+public:public
+db:
+  type:mysql
+  dsn:
