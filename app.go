@@ -3,11 +3,20 @@ package ginApp
 import (
     "github.com/gin-gonic/gin"
     "sync"
+    "github.com/dazhenghu/ginApp/config"
+)
+
+const (
+    // 当前环境
+    ENV_DEBUG string = "debug"
+    ENV_TEST string = "test"
+    ENV_PROD string = "prod"
 )
 
 type GinApp struct {
     engine *gin.Engine
-    appConfig map[string]interface{} // app的配置信息
+    envMode string // 当前环境
+    appConfig *config.AppConfig // app的配置信息
 }
 
 var instance *GinApp
@@ -24,7 +33,7 @@ func Instance() *GinApp {
             app := gin.Default()
             instance = &GinApp{
                 engine:app,
-                appConfig:make(map[string]interface{}),
+                appConfig:&config.AppConfig{},
             }
         }
     }
@@ -39,4 +48,15 @@ func Run(addr ...string) *GinApp {
 
 func (app *GinApp)Engine() *gin.Engine  {
     return app.engine
+}
+
+/**
+设置当前运行环境：debug、test、release
+ */
+func (app *GinApp)SetMode(mode string)  {
+    app.envMode = mode
+}
+
+func (app *GinApp)Mode() string  {
+    return app.envMode
 }

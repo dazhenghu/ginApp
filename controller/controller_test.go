@@ -29,8 +29,7 @@ action调用后回调
 
 func TestController_Init(t *testing.T) {
     ctrl := &TmpController{}
-    ctrl.Init()
-    ctrl.child = ctrl
+    ctrl.Init(ctrl)
     f := ctrl.hook(func(context *gin.Context) {
         fmt.Printf("invok:%s\n", "invoke")
     })
