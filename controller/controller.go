@@ -67,20 +67,21 @@ func (c *Controller) Post(relativePath string, handler gin.HandlerFunc)  {
 
 func (c *Controller) hook(handler gin.HandlerFunc) func(context *gin.Context)  {
     return func(context *gin.Context) {
+        berforeErr := c.this.beforeAction(context)
+        if berforeErr != nil {
+            panic(berforeErr)
+        }
+        handler(context)
+        // 执行handler之后执行beforeAction
+        afterErr := c.this.afterAction(context)
+        if afterErr != nil {
+            panic(afterErr)
+        }
         // 启动协程执行action
-        go func(c *Controller, context *gin.Context, handler gin.HandlerFunc) {
-            // 执行handler之前执行beforeAction
-            berforeErr := c.this.beforeAction(context)
-            if berforeErr != nil {
-                panic(berforeErr)
-            }
-            handler(context)
-            // 执行handler之后执行beforeAction
-            afterErr := c.this.afterAction(context)
-            if afterErr != nil {
-                panic(afterErr)
-            }
-        }(c, context, handler)
+        //go func(c *Controller, context *gin.Context, handler gin.HandlerFunc) {
+        //    // 执行handler之前执行beforeAction
+        //
+        //}(c, context, handler)
 
     }
 }
