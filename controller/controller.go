@@ -77,11 +77,5 @@ func (c *Controller) hook(handler gin.HandlerFunc) func(context *gin.Context)  {
         if afterErr != nil {
             panic(afterErr)
         }
-        // 启动协程执行action
-        //go func(c *Controller, context *gin.Context, handler gin.HandlerFunc) {
-        //    // 执行handler之前执行beforeAction
-        //
-        //}(c, context, handler)
-
     }
 }
