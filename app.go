@@ -4,6 +4,7 @@ import (
     "github.com/gin-gonic/gin"
     "sync"
     "github.com/dazhenghu/ginApp/config"
+    "path"
 )
 
 const (
@@ -79,7 +80,7 @@ func (app *GinApp)GetRootPath() string {
 func (app *GinApp)DefaultLoadConfig(configDirPath string)  {
     if configDirPath == "" {
         // 未设置路径
-        configDirPath = app.GetRootPath()
+        configDirPath = path.Join(app.GetRootPath(), "conf")
     }
 
     config.DefaultLoadFromYaml(configDirPath, app.AppConfig)
