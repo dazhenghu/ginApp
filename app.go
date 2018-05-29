@@ -14,9 +14,10 @@ const (
 )
 
 type GinApp struct {
+    rootPath string // 应用根目录
     engine *gin.Engine
     envMode string // 当前环境
-    appConfig *config.AppConfig // app的配置信息
+    AppConfig *config.AppConfig // app的配置信息
 }
 
 var instance *GinApp
@@ -33,7 +34,7 @@ func Instance() *GinApp {
             app := gin.Default()
             instance = &GinApp{
                 engine:app,
-                appConfig:&config.AppConfig{},
+                AppConfig:&config.AppConfig{},
             }
         }
     }
@@ -59,4 +60,18 @@ func (app *GinApp)SetMode(mode string)  {
 
 func (app *GinApp)Mode() string  {
     return app.envMode
+}
+
+/**
+设置项目根目录，通常是web所在目录
+ */
+func (app *GinApp)SetRootPath(root string)  {
+    app.rootPath = root
+}
+
+/**
+读取项目根目录
+ */
+func (app *GinApp)GetRootPath() string {
+    return app.rootPath
 }
