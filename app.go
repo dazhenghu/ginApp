@@ -5,6 +5,7 @@ import (
     "sync"
     "github.com/dazhenghu/ginApp/config"
     "path"
+    "github.com/dazhenghu/util/fileutil"
 )
 
 const (
@@ -15,10 +16,11 @@ const (
 )
 
 type GinApp struct {
-    rootPath string // 应用根目录
-    engine *gin.Engine
-    envMode string // 当前环境
-    AppConfig *config.AppConfig // app的配置信息
+    rootPath   string // 应用根目录
+    commonPath string // common目录
+    engine     *gin.Engine
+    envMode    string            // 当前环境
+    AppConfig  *config.AppConfig // app的配置信息
 }
 
 var instance *GinApp
@@ -77,7 +79,26 @@ func (app *GinApp)GetRootPath() string {
     return app.rootPath
 }
 
+/**
+设置common文件夹
+ */
+func (app *GinApp)SetCommonPath(commonPath string)  {
+    app.commonPath = commonPath
+}
+
+func (app *GinApp)GetCommonPath() string  {
+    return app.commonPath
+}
+
 func (app *GinApp)DefaultLoadConfig(configDirPath string)  {
+    if app.commonPath != "" {
+        if exists, err := fileutil.PathExists(app.commonPath); exists && err == nil {
+            commonConfigDirPath := path.Join(app.commonPath, "conf")
+            // 先读取common中的配置
+            config.DefaultLoadFromYaml(commonConfigDirPath, app.AppConfig)
+        }
+    }
+
     if configDirPath == "" {
         // 未设置路径
         configDirPath = path.Join(app.GetRootPath(), "conf")
