@@ -93,7 +93,7 @@ func (app *GinApp)GetCommonPath() string  {
 func (app *GinApp)DefaultLoadConfig(configDirPath string)  {
     if app.commonPath != "" {
         if exists, err := fileutil.PathExists(app.commonPath); exists && err == nil {
-            commonConfigDirPath := path.Join(app.commonPath, "conf")
+            commonConfigDirPath := path.Join(app.commonPath, "config")
             // 先读取common中的配置
             config.DefaultLoadFromYaml(commonConfigDirPath, app.AppConfig)
         }
@@ -101,7 +101,7 @@ func (app *GinApp)DefaultLoadConfig(configDirPath string)  {
 
     if configDirPath == "" {
         // 未设置路径
-        configDirPath = path.Join(app.GetRootPath(), "conf")
+        configDirPath = path.Join(app.GetRootPath(), "config")
     }
 
     config.DefaultLoadFromYaml(configDirPath, app.AppConfig)
