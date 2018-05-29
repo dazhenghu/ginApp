@@ -1,7 +1,6 @@
 package config
 
 import (
-    "github.com/dazhenghu/ginApp"
     "github.com/dazhenghu/util/fileutil"
     "path"
     "github.com/go-yaml/yaml"
@@ -9,13 +8,7 @@ import (
     "fmt"
 )
 
-func DefaultLoadFromYaml(configDirPath string) {
-    app := ginApp.Instance()
-    if configDirPath == "" {
-        // 未设置路径
-        configDirPath = app.GetRootPath()
-    }
-
+func DefaultLoadFromYaml(configDirPath string, appConfig *AppConfig) {
     mainConfigPath := path.Join(configDirPath, "main.yaml")
     if exists, err := fileutil.PathExists(mainConfigPath); exists && err == nil {
         // main配置存在
@@ -24,7 +17,7 @@ func DefaultLoadFromYaml(configDirPath string) {
         if err != nil {
             panic(fmt.Sprintf("load config err:%+v\n", err))
         }
-        err = yaml.Unmarshal(configFile, app.AppConfig)
+        err = yaml.Unmarshal(configFile, appConfig)
         if err != nil {
             panic(fmt.Sprintf("load config unmarshal err:%+v\n", err))
         }

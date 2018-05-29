@@ -75,3 +75,12 @@ func (app *GinApp)SetRootPath(root string)  {
 func (app *GinApp)GetRootPath() string {
     return app.rootPath
 }
+
+func (app *GinApp)DefaultLoadConfig(configDirPath string)  {
+    if configDirPath == "" {
+        // 未设置路径
+        configDirPath = app.GetRootPath()
+    }
+
+    config.DefaultLoadFromYaml(configDirPath, app.AppConfig)
+}
