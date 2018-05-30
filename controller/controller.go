@@ -65,6 +65,14 @@ func (c *Controller) Post(relativePath string, handler gin.HandlerFunc)  {
     ginApp.Instance().Engine().POST(relativePath, c.hook(handler))
 }
 
+/**
+同时设置POST、GET方法路由handle设置
+ */
+func (c *Controller) PostAndGet(relativePath string, handler gin.HandlerFunc)  {
+    ginApp.Instance().Engine().GET(relativePath, c.hook(handler))
+    ginApp.Instance().Engine().POST(relativePath, c.hook(handler))
+}
+
 func (c *Controller) hook(handler gin.HandlerFunc) func(context *gin.Context)  {
     return func(context *gin.Context) {
         berforeErr := c.this.beforeAction(context)
