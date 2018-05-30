@@ -6,6 +6,8 @@ import (
     "github.com/dazhenghu/ginApp/config"
     "path"
     "github.com/dazhenghu/util/fileutil"
+    "github.com/jinzhu/gorm"
+    "fmt"
 )
 
 const (
@@ -21,10 +23,12 @@ type GinApp struct {
     engine     *gin.Engine
     envMode    string            // 当前环境
     AppConfig  *config.AppConfig // app的配置信息
+    Db *gorm.DB // 默认数据库，主库
 }
 
 var instance *GinApp
 var mutex sync.Mutex
+var dbOnce sync.Once
 
 /**
 app单例
@@ -105,4 +109,24 @@ func (app *GinApp)DefaultLoadConfig(configDirPath string)  {
     }
 
     config.DefaultLoadFromYaml(configDirPath, app.AppConfig)
+}
+
+/**
+获取默认db
+ */
+func (app *GinApp) GetDb() *gorm.DB {
+    dbOnce.Do(func() {
+        dbConfig, ok := app.AppConfig.Dblist["db"]
+        if !ok {
+            return
+        }
+
+        db, err := gorm.Open(dbConfig.Type, dbConfig.Dsn)
+        if err != nil {
+            panic(fmt.Sprintf("default db init err,err:%+v", err))
+        }
+        app.Db = db
+    })
+
+    return app.Db
 }
