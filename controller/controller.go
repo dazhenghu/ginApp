@@ -39,7 +39,6 @@ func (c *Controller) Init(this ControllerInterface) error {
 action调用前回调
  */
 func (c *Controller) beforeAction(context *gin.Context) error {
-    fmt.Printf("Controller:%s\n", "before action")
     return nil
 }
 
@@ -47,7 +46,6 @@ func (c *Controller) beforeAction(context *gin.Context) error {
 action调用后回调
  */
 func (c *Controller) afterAction(context *gin.Context) error  {
-    fmt.Printf("Controller:%s\n", "after action")
     return nil
 }
 
