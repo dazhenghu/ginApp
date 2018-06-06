@@ -57,7 +57,7 @@ func Instance() *GinApp {
 
 func initFuncMap() template.FuncMap {
     tmplateFuncMap := template.FuncMap{
-        "unescaped": htmlutil.Unescape,
+        "unescape": htmlutil.Unescape,
     }
 
     return tmplateFuncMap
