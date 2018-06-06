@@ -8,6 +8,8 @@ import (
     "github.com/dazhenghu/util/fileutil"
     "github.com/jinzhu/gorm"
     "fmt"
+    "html/template"
+    "github.com/dazhenghu/util/htmlutil"
 )
 
 const (
@@ -46,8 +48,21 @@ func Instance() *GinApp {
         }
     }
 
+    // 初始化一些常用方法到模板中
+    tmplateFuncMap := initFuncMap()
+    instance.Engine().SetFuncMap(tmplateFuncMap)
+
     return instance
 }
+
+func initFuncMap() template.FuncMap {
+    tmplateFuncMap := template.FuncMap{
+        "unescaped": htmlutil.Unescape,
+    }
+
+    return tmplateFuncMap
+}
+
 
 func (app *GinApp)Run(addr ...string) *GinApp {
     Instance().engine.Run(addr...)
