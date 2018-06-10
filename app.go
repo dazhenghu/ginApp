@@ -10,6 +10,8 @@ import (
     "fmt"
     "html/template"
     "github.com/dazhenghu/util/htmlutil"
+    "github.com/gin-contrib/sessions"
+    "github.com/dazhenghu/ginApp/session"
 )
 
 const (
@@ -51,6 +53,9 @@ func Instance() *GinApp {
     // 初始化一些常用方法到模板中
     tmplateFuncMap := initFuncMap()
     instance.Engine().SetFuncMap(tmplateFuncMap)
+
+    // 初始化session配置
+
 
     return instance
 }
@@ -144,4 +149,13 @@ func (app *GinApp) GetDb() *gorm.DB {
     })
 
     return app.Db
+}
+
+/**
+初始化session配置
+ */
+func (app *GinApp) InitSession() error {
+    store, err := session.NewStore(app.AppConfig)
+    app.Engine().Use(sessions.Sessions(session.DefaultKey, store))
+    return err
 }
