@@ -23,7 +23,7 @@ func NewStore(appConfig *config.AppConfig) (store sessions.Store, err error) {
     switch appConfig.SessionCnf.Type {
     case SESSION_TYPE_COOKIE:
         store = sessions.NewCookieStore()
-    case SESSION_TYPE_MEMCACHED:
+    case SESSION_TYPE_REDIS:
         size, _ := strconv.Atoi(sessionConf["size"])
         network := sessionConf["network"]
         adress := sessionConf["adress"]
