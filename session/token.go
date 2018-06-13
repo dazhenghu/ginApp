@@ -12,6 +12,7 @@ func GenerateSessionToken(c *gin.Context, key string) (token string) {
     token = tokenObj.GenerateToken()
     session := sessions.Default(c)
     session.Set(key, token)
+    session.Save()
     return
 }
 
