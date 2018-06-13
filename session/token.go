@@ -18,6 +18,9 @@ func GenerateSessionToken(c *gin.Context, key string) (token string) {
 func CheckSessionToken(c *gin.Context, key string, token string) (err error) {
     session := sessions.Default(c)
     sessionToken := session.Get(key).(string)
+    if sessionToken == "" {
+        err = errors.New("token is empty")
+    }
     if sessionToken != token {
         err = errors.New("invalid token")
     }
