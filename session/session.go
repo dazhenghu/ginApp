@@ -15,7 +15,7 @@ const (
     SESSION_TYPE_MONGO     string = "mongo"     // 保存在mongo中
 )
 
-var DefaultKey string = "gin-session" // cookie中保存session的key
+var DefaultKey string = "ginappsession" // cookie中保存session的key
 
 func NewStore(appConfig *config.AppConfig) (store sessions.Store, err error) {
     sessionConf := appConfig.SessionCnf.ConnectCnf
