@@ -29,7 +29,7 @@ func NewStore(appConfig *config.AppConfig) (store sessions.Store, err error) {
         network := sessionConf["network"]
         adress := sessionConf["adress"]
         password := sessionConf["password"]
-        store, err = sessions.NewRedisStore(size, network, adress, password, []byte("secret"))
+        store, err = sessions.NewRedisStore(size, network, adress, password)
         store.Options(sessions.Options{
             Path: "/",
             HttpOnly: true,
