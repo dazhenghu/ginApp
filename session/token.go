@@ -7,12 +7,12 @@ import (
     "errors"
 )
 
-func GenerateSessionToken(c *gin.Context, key string) (token string) {
+func GenerateSessionToken(c *gin.Context, key string) (token string, err error) {
     tokenObj := token2.NewToken("")
     token = tokenObj.GenerateToken()
     session := sessions.Default(c)
     session.Set(key, token)
-    session.Save()
+    err = session.Save()
     return
 }
 
