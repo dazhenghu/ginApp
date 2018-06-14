@@ -18,18 +18,23 @@ const (
 var DefaultKey string = "ginappsession" // cookie中保存session的key
 
 func NewStore(appConfig *config.AppConfig) (store sessions.Store, err error) {
+
+    secret := appConfig.Secret
+    if secret == "" {
+        secret = "ZJuZZHwk626kwcHI2"
+    }
     sessionConf := appConfig.SessionCnf.ConnectCnf
 
     switch appConfig.SessionCnf.Type {
     case SESSION_TYPE_COOKIE:
-        store = sessions.NewCookieStore()
+        store = sessions.NewCookieStore([]byte(secret))
         return
     case SESSION_TYPE_REDIS:
         size, _ := strconv.Atoi(sessionConf["size"])
         network := sessionConf["network"]
         adress := sessionConf["adress"]
         password := sessionConf["password"]
-        store, err = sessions.NewRedisStore(size, network, adress, password, []byte("secret"))
+        store, err = sessions.NewRedisStore(size, network, adress, password, []byte(secret))
         store.Options(sessions.Options{
             HttpOnly: true,
         })

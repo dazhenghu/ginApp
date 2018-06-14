@@ -18,6 +18,7 @@ app配置
 type AppConfig struct {
     Addr          string             `yaml:"addr"`        // 监听端口
     Pulic         StaticConfig       `yaml:"public"`      // 静态资源路径
+    Secret        string             `yaml:"secret"`      // 用于系统加密的秘钥
     ViewBaseDir   string             `yaml:"viewBaseDir"` // view路径
     Dblist        map[string]DbConfg `yaml:"dblist"`      // 数据库连接列表
     AppLibAbsPath string                                  // ginapp所在的绝对路径
