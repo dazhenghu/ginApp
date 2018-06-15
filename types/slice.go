@@ -28,6 +28,7 @@ func (ss *SliceString) Append(appendVal string)  {
     *ss = append(*ss, appendVal)
 }
 
-//func (ss *SliceString)   {
-//
-//}
+func (ss *SliceString) ToSlice() (slice []string)  {
+    slice = []string(*ss)
+    return
+}
