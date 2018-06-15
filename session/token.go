@@ -18,7 +18,7 @@ func GenerateSessionToken(c *gin.Context, key string) (token string, err error) 
     var tokenList types.SliceString
     fmt.Printf("tokens:%+v\n", tokens)
     if tokens != nil {
-        tokenList = tokens.(types.SliceString)
+        tokenList = types.NewSliceStringFromSlice(tokens.([]string))
     } else {
         tokenList = types.NewSliceString()
     }

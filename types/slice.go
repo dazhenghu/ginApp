@@ -7,6 +7,11 @@ func NewSliceString() (ss SliceString) {
     return
 }
 
+func NewSliceStringFromSlice(arr []string) (ss SliceString) {
+    ss = arr
+    return
+}
+
 func (ss *SliceString) Remove(rmVal string) {
     index := -1
     ssObj := *ss
