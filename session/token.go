@@ -22,8 +22,8 @@ func GenerateSessionToken(c *gin.Context, key string) (token string, err error) 
     }
 
     (&tokenList).Append(token)
-    fmt.Printf("tokenList:%+v\n", tokenList)
-    session.Set(key, tokenList)
+    fmt.Printf("tokenList:%+v\n", []string(tokenList))
+    session.Set(key, []string(tokenList))
     err = session.Save()
     return
 }
