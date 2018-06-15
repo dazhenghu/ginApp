@@ -6,6 +6,7 @@ import (
     token2 "github.com/dazhenghu/ginApp/safe/token"
     "errors"
     "github.com/dazhenghu/ginApp/types"
+    "fmt"
 )
 
 func GenerateSessionToken(c *gin.Context, key string) (token string, err error) {
@@ -21,6 +22,7 @@ func GenerateSessionToken(c *gin.Context, key string) (token string, err error) 
     }
 
     (&tokenList).Append(token)
+    fmt.Printf("tokenList:%+v\n", tokenList)
     session.Set(key, tokenList)
     err = session.Save()
     return
