@@ -1,6 +1,10 @@
 package types
 
+import "sync"
+
 type SliceString []string
+
+var SliceStrMutex sync.Mutex
 
 func NewSliceString() (ss SliceString) {
     ss = make(SliceString, 0)
@@ -12,21 +16,23 @@ func NewSliceStringFromSlice(arr []string) (ss SliceString) {
     return
 }
 
-func (ss *SliceString) Remove(rmVal string) {
-    index := -1
+func (ss *SliceString) Remove(rmVal string) (removedIdx int) {
+    SliceStrMutex.Lock()
+    defer SliceStrMutex.Unlock()
+    removedIdx = -1
     ssObj := *ss
     for i, val := range ssObj {
         if val == rmVal {
-            index = i
+            removedIdx = i
             break
         }
     }
 
-    if index > -1 {
-        ssObj = append(ssObj[:index], ssObj[index+1:]...)
+    if removedIdx > -1 {
+        ssObj = append(ssObj[:removedIdx], ssObj[removedIdx+1:]...)
     }
-
     *ss = ssObj
+    return
 }
 
 func (ss *SliceString) Append(appendVal string)  {

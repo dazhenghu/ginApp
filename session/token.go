@@ -6,7 +6,6 @@ import (
     token2 "github.com/dazhenghu/ginApp/safe/token"
     "errors"
     "github.com/dazhenghu/ginApp/types"
-    "fmt"
 )
 
 
@@ -16,7 +15,6 @@ func GenerateSessionToken(c *gin.Context, key string) (token string, err error) 
     session := sessions.Default(c)
     tokens := session.Get(key)
     var tokenList types.SliceString
-    fmt.Printf("tokens:%+v\n", tokens)
     if tokens != nil {
         tokenList = types.NewSliceStringFromSlice(tokens.([]string))
     } else {
@@ -31,14 +29,21 @@ func GenerateSessionToken(c *gin.Context, key string) (token string, err error) 
 
 func CheckSessionToken(c *gin.Context, key string, token string) (err error) {
     session := sessions.Default(c)
-    sessionTokens := session.Get(key).([]string)
-    for _, val := range sessionTokens {
-        if val == token {
-
-            return
-        }
+    tokens := session.Get(key)
+    var tokenList types.SliceString
+    if tokens != nil {
+        tokenList = types.NewSliceStringFromSlice(tokens.([]string))
+    } else {
+        tokenList = types.NewSliceString()
     }
 
-    err = errors.New("invalid token")
+    removedIdx := (&tokenList).Remove(token)
+
+    if removedIdx < 0 {
+        err = errors.New("invalid token")
+    } else {
+        session.Set(key, tokenList.ToSlice())
+        err = session.Save()
+    }
     return
 }
