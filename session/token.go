@@ -11,19 +11,21 @@ func GenerateSessionToken(c *gin.Context, key string) (token string, err error) 
     tokenObj := token2.NewToken("")
     token = tokenObj.GenerateToken()
     session := sessions.Default(c)
-    session.Set(key, token)
+    session.Set(key, []string{token})
     err = session.Save()
     return
 }
 
 func CheckSessionToken(c *gin.Context, key string, token string) (err error) {
     session := sessions.Default(c)
-    sessionToken := session.Get(key).(string)
-    if sessionToken == "" {
-        err = errors.New("token is empty")
+    sessionTokens := session.Get(key).([]string)
+    for _, val := range sessionTokens {
+        if val == token {
+
+            return
+        }
     }
-    if sessionToken != token {
-        err = errors.New("invalid token")
-    }
+
+    err = errors.New("invalid token")
     return
 }
