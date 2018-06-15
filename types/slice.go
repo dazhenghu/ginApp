@@ -2,26 +2,31 @@ package types
 
 import "sync"
 
-type SliceString []string
+type SliceString struct {
+    slice []string
+    sync.Mutex
+}
 
-var SliceStrMutex sync.Mutex
-
-func NewSliceString() (ss SliceString) {
-    ss = make(SliceString, 0)
+func NewSliceString() (ss *SliceString) {
+    ss = &SliceString{
+        slice: make([]string, 0),
+    }
     return
 }
 
-func NewSliceStringFromSlice(arr []string) (ss SliceString) {
-    ss = arr
+func NewSliceStringFromSlice(arr []string) (ss *SliceString) {
+    ss = &SliceString{
+        slice: arr,
+    }
     return
 }
 
 func (ss *SliceString) Remove(rmVal string) (removedIdx int) {
-    SliceStrMutex.Lock()
-    defer SliceStrMutex.Unlock()
+    ss.Lock()
+    defer ss.Unlock()
     removedIdx = -1
     ssObj := *ss
-    for i, val := range ssObj {
+    for i, val := range ss.slice {
         if val == rmVal {
             removedIdx = i
             break
@@ -29,17 +34,17 @@ func (ss *SliceString) Remove(rmVal string) (removedIdx int) {
     }
 
     if removedIdx > -1 {
-        ssObj = append(ssObj[:removedIdx], ssObj[removedIdx+1:]...)
+        ss.slice = append(ss.slice[:removedIdx], ss.slice[removedIdx+1:]...)
     }
     *ss = ssObj
     return
 }
 
 func (ss *SliceString) Append(appendVal string)  {
-    *ss = append(*ss, appendVal)
+    ss.slice = append(ss.slice, appendVal)
 }
 
 func (ss *SliceString) ToSlice() (slice []string)  {
-    slice = []string(*ss)
+    slice = ss.slice
     return
 }

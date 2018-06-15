@@ -14,14 +14,14 @@ func GenerateSessionToken(c *gin.Context, key string) (token string, err error) 
     token = tokenObj.GenerateToken()
     session := sessions.Default(c)
     tokens := session.Get(key)
-    var tokenList types.SliceString
+    var tokenList *types.SliceString
     if tokens != nil {
         tokenList = types.NewSliceStringFromSlice(tokens.([]string))
     } else {
         tokenList = types.NewSliceString()
     }
 
-    (&tokenList).Append(token)
+    tokenList.Append(token)
     session.Set(key, tokenList.ToSlice())
     err = session.Save()
     return
@@ -30,14 +30,14 @@ func GenerateSessionToken(c *gin.Context, key string) (token string, err error) 
 func CheckSessionToken(c *gin.Context, key string, token string) (err error) {
     session := sessions.Default(c)
     tokens := session.Get(key)
-    var tokenList types.SliceString
+    var tokenList *types.SliceString
     if tokens != nil {
         tokenList = types.NewSliceStringFromSlice(tokens.([]string))
     } else {
         tokenList = types.NewSliceString()
     }
 
-    removedIdx := (&tokenList).Remove(token)
+    removedIdx := tokenList.Remove(token)
 
     if removedIdx < 0 {
         err = errors.New("invalid token")
