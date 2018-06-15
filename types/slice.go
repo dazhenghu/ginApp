@@ -25,7 +25,6 @@ func (ss *SliceString) Remove(rmVal string) (removedIdx int) {
     ss.Lock()
     defer ss.Unlock()
     removedIdx = -1
-    ssObj := *ss
     for i, val := range ss.slice {
         if val == rmVal {
             removedIdx = i
@@ -36,7 +35,6 @@ func (ss *SliceString) Remove(rmVal string) (removedIdx int) {
     if removedIdx > -1 {
         ss.slice = append(ss.slice[:removedIdx], ss.slice[removedIdx+1:]...)
     }
-    *ss = ssObj
     return
 }
 
