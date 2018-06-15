@@ -2,6 +2,11 @@ package types
 
 type SliceString []string
 
+func NewSliceString() (ss SliceString) {
+    ss = make(SliceString, 0)
+    return
+}
+
 func (ss *SliceString) Remove(rmVal string) {
     index := -1
     ssObj := *ss
@@ -19,8 +24,10 @@ func (ss *SliceString) Remove(rmVal string) {
     *ss = ssObj
 }
 
-func (ss *SliceString) Append(appendVal string) (err error)  {
-
-    //*ss = append()
-
+func (ss *SliceString) Append(appendVal string)  {
+    *ss = append(*ss, appendVal)
 }
+
+//func (ss *SliceString)   {
+//
+//}

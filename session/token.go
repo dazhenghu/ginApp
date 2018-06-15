@@ -5,16 +5,22 @@ import (
     "github.com/gin-contrib/sessions"
     token2 "github.com/dazhenghu/ginApp/safe/token"
     "errors"
-    "container/list"
+    "github.com/dazhenghu/ginApp/types"
 )
 
 func GenerateSessionToken(c *gin.Context, key string) (token string, err error) {
     tokenObj := token2.NewToken("")
     token = tokenObj.GenerateToken()
     session := sessions.Default(c)
-    tokenList := list.New()
-    tokenList.PushBack(token)
-    tokenList.PushBack("asdasd")
+    tokens := session.Get(key)
+    var tokenList types.SliceString
+    if tokenList != nil {
+        tokenList = tokens.(types.SliceString)
+    } else {
+        tokenList = types.NewSliceString()
+    }
+
+    (&tokenList).Append(token)
     session.Set(key, tokenList)
     err = session.Save()
     return
