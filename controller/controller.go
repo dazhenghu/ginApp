@@ -75,13 +75,13 @@ func (c *Controller) hook(handler gin.HandlerFunc) func(context *gin.Context)  {
     return func(context *gin.Context) {
         berforeErr := c.this.beforeAction(context)
         if berforeErr != nil {
-            panic(berforeErr)
+            return
         }
         handler(context)
         // 执行handler之后执行beforeAction
         afterErr := c.this.afterAction(context)
         if afterErr != nil {
-            panic(afterErr)
+            return
         }
     }
 }
