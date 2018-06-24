@@ -2,6 +2,9 @@ package types
 
 import "sync"
 
+/**
+可设置最大长度的字符串列表，支持设置最大长度，当长度达到最大值时从列表左侧删除数据释放空间
+ */
 type SliceString struct {
     slice []string // 存储数据的切片
     maxLen int     // 允许的最大长度，超过在从左侧删除

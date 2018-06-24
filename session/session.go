@@ -23,11 +23,17 @@ func NewStore(appConfig *config.AppConfig) (store sessions.Store, err error) {
     if secret == "" {
         secret = "ZJuZZHwk626kwcHI2"
     }
-    sessionConf := appConfig.SessionCnf.ConnectCnf
+    sessionConf := appConfig.SessionCnf.ConnectCnf // 配置中读取的session配置信息
+
+    options := sessions.Options{
+        Path: "/",
+        HttpOnly: true,
+    }
 
     switch appConfig.SessionCnf.Type {
     case SESSION_TYPE_COOKIE:
         store = sessions.NewCookieStore([]byte(secret))
+        store.Options(options)
         return
     case SESSION_TYPE_REDIS:
         size, _ := strconv.Atoi(sessionConf["size"])
@@ -35,9 +41,7 @@ func NewStore(appConfig *config.AppConfig) (store sessions.Store, err error) {
         adress := sessionConf["adress"]
         password := sessionConf["password"]
         store, err = sessions.NewRedisStore(size, network, adress, password, []byte(secret))
-        store.Options(sessions.Options{
-            HttpOnly: true,
-        })
+        store.Options(options)
         return
     }
 
