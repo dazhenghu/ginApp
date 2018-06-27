@@ -12,6 +12,9 @@ import (
     "github.com/dazhenghu/util/htmlutil"
     "github.com/gin-contrib/sessions"
     "github.com/dazhenghu/ginApp/session"
+    "time"
+    "github.com/dazhenghu/ginApp/identify"
+    "github.com/dchest/captcha"
 )
 
 const (
@@ -158,4 +161,12 @@ func (app *GinApp) InitSession() error {
     store, err := session.NewStore(app.AppConfig)
     app.Engine().Use(sessions.Sessions(session.DefaultKey, store))
     return err
+}
+
+/**
+初始化验证码模块
+ */
+func (app *GinApp) InitIdentify(expirePeriod time.Duration)  {
+    identifyStore := identify.GetSessionStore(expirePeriod)
+    captcha.SetCustomStore(identifyStore)
 }
