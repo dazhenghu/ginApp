@@ -167,6 +167,7 @@ func (app *GinApp) InitSession() error {
 初始化验证码模块
  */
 func (app *GinApp) InitIdentify(expirePeriod time.Duration)  {
-    identifyStore := identify.GetSessionStore(expirePeriod)
+    identifyStore := identify.GetSessionStore()
+    identifyStore.Init(expirePeriod)
     captcha.SetCustomStore(identifyStore)
 }

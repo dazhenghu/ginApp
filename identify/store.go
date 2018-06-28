@@ -30,15 +30,19 @@ var STORE_ERR_ID_EXISTS = errors.New("id exists, please reload")
 var sessionStoreInstance *sessionStore
 var once sync.Once
 
-func GetSessionStore(expirePeriod time.Duration) *sessionStore {
+func GetSessionStore() *sessionStore {
     once.Do(func() {
         sessionStoreInstance = &sessionStore{
             contextIdMap: make(map[string]*contextWithTime),
-            expirePeriod: expirePeriod,
         }
     })
 
     return sessionStoreInstance
+}
+
+func (ss *sessionStore) Init(expirePeriod time.Duration)  {
+    sessStore := GetSessionStore()
+    sessStore.expirePeriod = expirePeriod
 }
 
 /**

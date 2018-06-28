@@ -40,6 +40,9 @@ func (ch *captchaHandler) Handle(context *gin.Context) error {
         return errorDefine.ERROR_NOT_FOUND
     }
 
+    sessStore := GetSessionStore()
+    sessStore.PushContextId(context, id) // 注入context与id的关系，主要用于SessionStore将id存入到session中
+
     if context.Param("reload") != "" {
         captcha.Reload(id)
     }
@@ -47,7 +50,10 @@ func (ch *captchaHandler) Handle(context *gin.Context) error {
     lang := strings.ToLower(context.Param("lang"))
     download := path.Base(dir) == "download"
 
-    return ch.serve(context, lang, download)
+    err := ch.serve(context, lang, download)
+
+    sessStore.RemoveContextId(context, id) // 移除内存中的缓存
+    return err
 }
 
 func (ch *captchaHandler) serve(context *gin.Context, lang string, download bool) error {
