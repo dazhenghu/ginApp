@@ -4,8 +4,10 @@ import (
     "runtime"
     "path/filepath"
     "errors"
+    "github.com/dazhenghu/ginApp/consts"
 )
 
+var EnvMode string = consts.ENV_DEBUG
 var AppLibAbsPath string
 
 func init()  {

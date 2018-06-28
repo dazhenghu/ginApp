@@ -17,13 +17,6 @@ import (
     "github.com/dchest/captcha"
 )
 
-const (
-    // 当前环境
-    ENV_DEBUG string = "debug"
-    ENV_TEST string = "test"
-    ENV_PROD string = "prod"
-)
-
 type GinApp struct {
     rootPath   string // 应用根目录
     commonPath string // common目录

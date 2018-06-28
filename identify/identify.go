@@ -36,12 +36,13 @@ func (ch *captchaHandler) Handle(context *gin.Context) error {
     name := context.Param("name") // 请求文件名
     ext := filepath.Ext(name)
     id := name[:len(name)-len(ext)]
+
     if ext == "" || id == "" {
         return errorDefine.ERROR_NOT_FOUND
     }
 
     sessStore := GetSessionStore()
-    sessStore.PushContextId(context, id) // 注入context与id的关系，主要用于SessionStore将id存入到session中
+    err := sessStore.PushContextId(context, id) // 注入context与id的关系，主要用于SessionStore将id存入到session中
 
     if context.Param("reload") != "" {
         captcha.Reload(id)
@@ -50,13 +51,13 @@ func (ch *captchaHandler) Handle(context *gin.Context) error {
     lang := strings.ToLower(context.Param("lang"))
     download := path.Base(dir) == "download"
 
-    err := ch.serve(context, lang, download)
+    err = ch.serve(context, lang, download)
 
     sessStore.RemoveContextId(context, id) // 移除内存中的缓存
     return err
 }
 
-func (ch *captchaHandler) serve(context *gin.Context, lang string, download bool) error {
+func (ch *captchaHandler) serve(context *gin.Context, lang string, download bool) (err error) {
     name := context.Param("name") // 请求文件名
     ext := filepath.Ext(name)
     id := name[:len(name)-len(ext)]
@@ -69,10 +70,10 @@ func (ch *captchaHandler) serve(context *gin.Context, lang string, download bool
     switch ext {
     case ".png":
         context.Header("Content-Type", "image/png")
-        captcha.WriteImage(context.Writer, id, ch.imgWidth, ch.imgHeight)
+        err = captcha.WriteImage(context.Writer, id, ch.imgWidth, ch.imgHeight)
     case ".wav":
         context.Header("Content-Type", "audio/x-wav")
-        captcha.WriteAudio(&content, id, lang)
+        err = captcha.WriteAudio(&content, id, lang)
     default:
         return errorDefine.ERROR_NOT_FOUND
     }
@@ -82,7 +83,7 @@ func (ch *captchaHandler) serve(context *gin.Context, lang string, download bool
     }
 
     http.ServeContent(context.Writer, context.Request, id+ext, time.Time{}, bytes.NewReader(content.Bytes()))
-    return nil
+    return
 }
 
 //func (h *captchaHandler) serve(w http.ResponseWriter, r *http.Request, id, ext, lang string, download bool) error {

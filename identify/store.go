@@ -53,6 +53,7 @@ func (ss *sessionStore) Set(id string, digits []byte) {
     defer ss.sessionMutex.Unlock()
 
     contextWithTime := ss.contextIdMap[id]
+
     sess := sessions.Default(contextWithTime.context)
     sess.Set(ss.keyByid(id), digits)
     sess.Save()
@@ -86,8 +87,10 @@ func (ss *sessionStore) Get(id string, clear bool) (digits []byte)  {
         return
     }
 
-    digits = sess.Get(ss.keyByid(id)).([]byte)
-
+    digitsVal := sess.Get(ss.keyByid(id))
+    if digitsVal != nil {
+        digits = digitsVal.([]byte)
+    }
     return
 }
 
