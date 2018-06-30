@@ -44,7 +44,7 @@ func (ch *captchaHandler) Handle(context *gin.Context) error {
     sessStore := GetSessionStore()
     err := sessStore.PushContextId(context, id) // 注入context与id的关系，主要用于SessionStore将id存入到session中
 
-    if context.Param("reload") != "" {
+    if context.Query("reload") != "" {
         captcha.Reload(id)
     }
 
@@ -53,7 +53,7 @@ func (ch *captchaHandler) Handle(context *gin.Context) error {
 
     err = ch.serve(context, lang, download)
 
-    sessStore.RemoveContextId(context, id) // 移除内存中的缓存
+    sessStore.RemoveContextId(id) // 移除内存中的缓存
     return err
 }
 

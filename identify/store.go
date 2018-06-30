@@ -13,7 +13,8 @@ import (
 type sessionStore struct {
     captcha.Store
     contextIdMap map[string]*contextWithTime // 保存id与gin.context的映射关系，用于将id保存至session中
-    expirePeriod time.Duration // 有效时长，单位秒，超过这个时长后过期删除
+    expirePeriod time.Duration               // 有效时长，超过这个时长后过期删除
+    gcPeriod     time.Duration               // 定时清理contextIdMap中过期元素的周期时长
 
     sessionMutex sync.RWMutex
     memoryMutex sync.RWMutex
@@ -23,9 +24,10 @@ type contextWithTime struct {
     context *gin.Context
     createTime time.Time
 }
-
+// 无效的id，请刷新
 var STORE_ERR_REMOVE_EMPTY = errors.New("invalid id, please reload")
-var STORE_ERR_ID_EXISTS = errors.New("id exists, please reload")
+// 重复的id
+var STORE_ERR_ID_EXISTS    = errors.New("id exists, please reload")
 
 var sessionStoreInstance *sessionStore
 var once sync.Once
@@ -40,9 +42,23 @@ func GetSessionStore() *sessionStore {
     return sessionStoreInstance
 }
 
-func (ss *sessionStore) Init(expirePeriod time.Duration)  {
+func (ss *sessionStore) Init(expirePeriod time.Duration, gcPeriod time.Duration)  {
     sessStore := GetSessionStore()
     sessStore.expirePeriod = expirePeriod
+    sessStore.gcPeriod     = gcPeriod
+}
+
+func (ss *sessionStore) clearCacheData() {
+    for {
+        time.Sleep(ss.gcPeriod)
+
+        for id, contextTime := range ss.contextIdMap {
+            if contextTime != nil && contextTime.createTime.Add(ss.expirePeriod).Before(time.Now()) {
+                // 已经过期
+                ss.RemoveContextId(id)
+            }
+        }
+    }
 }
 
 /**
@@ -52,18 +68,24 @@ func (ss *sessionStore) Set(id string, digits []byte) {
     ss.sessionMutex.Lock()
     defer ss.sessionMutex.Unlock()
 
-    contextWithTime := ss.contextIdMap[id]
+    contextWithTime, ok := ss.contextIdMap[id]
 
-    sess := sessions.Default(contextWithTime.context)
-    sess.Set(ss.keyByid(id), digits)
-    sess.Save()
+    if ok {
+        sess := sessions.Default(contextWithTime.context)
+        sess.Set(ss.keyByid(id), digits)
+        sess.Save()
+    }
 }
 
 /**
 从session中读取校验码
  */
 func (ss *sessionStore) Get(id string, clear bool) (digits []byte)  {
-    contextWithTime := ss.contextIdMap[id]
+    contextWithTime, ok := ss.contextIdMap[id]
+    if !ok {
+        return
+    }
+
     sess := sessions.Default(contextWithTime.context) // 获取用户session
 
     overdue := ss.expirePeriod > 0 && contextWithTime.createTime.Add(ss.expirePeriod).Before(time.Now())
@@ -83,7 +105,7 @@ func (ss *sessionStore) Get(id string, clear bool) (digits []byte)  {
         sess.Delete(ss.keyByid(id))
         sess.Save()
         // 删除内存中保存的context与id对应关系
-        ss.RemoveContextId(contextWithTime.context, id)
+        ss.RemoveContextId(id)
         return
     }
 
@@ -121,14 +143,10 @@ func (ss *sessionStore) PushContextId(context *gin.Context, id string) error {
 /**
 删除停留在内存中的context与id的映射数据
  */
-func (ss *sessionStore) RemoveContextId(context *gin.Context, id string) error {
+func (ss *sessionStore) RemoveContextId(id string) error {
     ss.memoryMutex.Lock()
     defer ss.memoryMutex.Unlock()
-    contWithTime, ok := ss.contextIdMap[id]
-    if contWithTime.context != context {
-        // 删除的数据对应不上
-        return STORE_ERR_REMOVE_EMPTY
-    }
+    _, ok := ss.contextIdMap[id]
 
     if !ok {
         // 本来就没有这个数据，则返回删除成功

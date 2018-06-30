@@ -9,6 +9,7 @@ import (
     "strconv"
     "github.com/gin-gonic/gin"
     "github.com/dazhenghu/ginApp/identify"
+    "net/http"
 )
 
 var App *GinApp
@@ -31,7 +32,7 @@ func init()  {
     fmt.Printf("session err:%+v\n", sessionErr)
 
     // 初始化验证码模块，过期时间为10分钟
-    App.InitIdentify(10 * time.Minute)
+    App.InitIdentify(10 * time.Minute, 10 * time.Minute)
 }
 
 
@@ -47,6 +48,9 @@ func TestGinApp_InitIdentify(t *testing.T) {
     App.Engine().GET("login", func(context *gin.Context) {
         id := identify.New(context)
         fmt.Printf("id:%s\n", id)
+        context.JSON(http.StatusOK, gin.H{
+            "id":id,
+        })
         return
     })
 

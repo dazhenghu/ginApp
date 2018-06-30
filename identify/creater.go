@@ -15,7 +15,7 @@ func NewLen(context *gin.Context, length int) (id string) {
     sessStore := GetSessionStore()
     sessStore.PushContextId(context, id)
     sessStore.Set(id, captcha.RandomDigits(length))
-    sessStore.RemoveContextId(context, id)
+    sessStore.RemoveContextId(id)
     return
 }
 

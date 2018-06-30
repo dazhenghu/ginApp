@@ -159,8 +159,8 @@ func (app *GinApp) InitSession() error {
 /**
 初始化验证码模块
  */
-func (app *GinApp) InitIdentify(expirePeriod time.Duration)  {
+func (app *GinApp) InitIdentify(expirePeriod, gcPeriod time.Duration)  {
     identifyStore := identify.GetSessionStore()
-    identifyStore.Init(expirePeriod)
+    identifyStore.Init(expirePeriod, gcPeriod)
     captcha.SetCustomStore(identifyStore)
 }
