@@ -6,6 +6,7 @@ import (
     "reflect"
     "fmt"
     "strings"
+    "github.com/dazhenghu/ginApp/logs"
 )
 
 type ControllerInterface interface {
@@ -27,9 +28,7 @@ func (c *Controller) Init(this ControllerInterface) error {
     c.this = this
     // 读取当前类名，去掉controller后缀
     ctrlType :=  reflect.TypeOf(c.this).String()
-    if ginApp.Instance().Mode() == ginApp.ENV_DEBUG {
-        fmt.Printf("Controller Init, controller type:%+v\n", ctrlType)
-    }
+    logs.Debug(fmt.Sprintf("Controller Init, controller type:%+v\n", ctrlType))
     ctrlType = ctrlType[strings.LastIndex(ctrlType, ".") + 1:]
     c.ctrlName = strings.TrimRight(ctrlType, "Controller")
     return nil
