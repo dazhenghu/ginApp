@@ -1,6 +1,9 @@
 package logs
 
-import log "github.com/sirupsen/logrus"
+import (
+    log "github.com/sirupsen/logrus"
+    "io"
+)
 
 func Info(args ...interface{})  {
     log.Info(args...)
@@ -32,6 +35,11 @@ func Fatal(args ...interface{}) {
 
 func WithFields(fields log.Fields) *log.Entry {
     return log.WithFields(fields)
+}
+
+// SetOutput sets the standard logger output.
+func SetOutput(out io.Writer) {
+    log.SetOutput(out)
 }
 
 /**
