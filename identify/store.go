@@ -46,8 +46,13 @@ func (ss *sessionStore) Init(expirePeriod time.Duration, gcPeriod time.Duration)
     sessStore := GetSessionStore()
     sessStore.expirePeriod = expirePeriod
     sessStore.gcPeriod     = gcPeriod
+
+    go ss.clearCacheData()
 }
 
+/**
+定期清除contextIdMap中的过期数据
+ */
 func (ss *sessionStore) clearCacheData() {
     for {
         time.Sleep(ss.gcPeriod)
