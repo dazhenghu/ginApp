@@ -8,6 +8,8 @@ import (
     "time"
     "github.com/gin-contrib/sessions"
     "github.com/dazhenghu/ginApp/consts"
+    "github.com/dazhenghu/ginApp/logs"
+    "fmt"
 )
 
 type sessionStore struct {
@@ -88,6 +90,7 @@ func (ss *sessionStore) Set(id string, digits []byte) {
 func (ss *sessionStore) Get(id string, clear bool) (digits []byte)  {
     contextWithTime, ok := ss.contextIdMap[id]
     if !ok {
+        logs.Error(fmt.Sprintf("captcha get err, index val empty:%s", id))
         return
     }
 
